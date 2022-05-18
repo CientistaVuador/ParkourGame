@@ -7,7 +7,6 @@ package parkourgame;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.util.Objects;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
@@ -43,6 +42,84 @@ public class Platform {
     private static final Vector4f de = new Vector4f();
     //
 
+    public static class MoveableCirclePlatform extends UpdatablePlatform {
+        private final Vector3f rotation = new Vector3f(0.0f, 0.3f, 0.0f);
+        private final Vector3f original = new Vector3f(Float.POSITIVE_INFINITY);
+        
+        public MoveableCirclePlatform() {
+            super(Color.RED);
+        }
+        
+        @Override
+        protected void updatePlatform(float tpf) {
+            if (!original.isFinite()) {
+                original.set(getPosition());
+            }
+            
+            rotation.rotateZ(tpf * 2);
+            
+            getPosition().set(original).add(rotation);
+        }
+
+    }
+    
+    public static class MoveableYPlatform extends UpdatablePlatform {
+        private float counter = 0;
+        
+        public MoveableYPlatform() {
+            super(Color.RED);
+        }
+        
+        @Override
+        protected void updatePlatform(float tpf) {
+            getPosition().add(0, (float) Math.cos(counter * Math.PI) * 0.0001f, 0);
+            counter += tpf;
+            
+            if (counter >= 2f) {
+                counter = 0;
+            }
+        }
+
+    }
+    
+    public static class MoveableXPlatform extends UpdatablePlatform {
+        private float counter = 0;
+        
+        public MoveableXPlatform() {
+            super(Color.RED);
+        }
+        
+        @Override
+        protected void updatePlatform(float tpf) {
+            getPosition().add((float) Math.cos(counter * Math.PI) * 0.0001f, 0, 0);
+            counter += tpf;
+            
+            if (counter >= 2f) {
+                counter = 0;
+            }
+        }
+
+    }
+    
+    public static abstract class UpdatablePlatform extends Platform {
+        private final Vector3f lastPosition = new Vector3f();
+        
+        public UpdatablePlatform(Color color) {
+            super(color);
+        }
+        
+        protected abstract void updatePlatform(float tpf);
+        
+        public void update(float tpf) {
+            getLastPosition().set(getPosition());
+            updatePlatform(tpf);
+        }
+
+        public Vector3f getLastPosition() {
+            return lastPosition;
+        }
+    }
+    
     public static class StartLevelPlatform extends Platform {
 
         public StartLevelPlatform() {
@@ -136,7 +213,7 @@ public class Platform {
         cam.getProjection(projection);
 
         projection.mul(view).mul(model);
-
+        
         projection.transform(a);
         projection.transform(b);
         projection.transform(c);

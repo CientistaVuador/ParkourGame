@@ -17,12 +17,12 @@ import org.joml.Vector3f;
  */
 public class Camera {
 
-    public static final float GRAVITY = 9.8f;
-    public static final float JUMP_SPEED = 5f;
+    public static final float GRAVITY = 9.8f / 2f;
+    public static final float JUMP_SPEED = 1.5f;
 
-    public static final float YAW = -90.0f;
+    public static final float YAW = 90.0f;
     public static final float PITCH = 0.0f;
-    public static final float SPEED = 1.0f;
+    public static final float SPEED = 0.85f;
     public static final float SENSITIVITY = 0.05f;
     public static final float FOV = 90f;
 

@@ -24,6 +24,7 @@ import javax.swing.SwingUtilities;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import parkourgame.Platform.EndLevelPlatform;
+import parkourgame.Platform.UpdatablePlatform;
 
 /**
  *
@@ -174,6 +175,21 @@ public class Game {
                 cam.resetPosition();
             }
             
+            float yStore = cam.getPosition().get(1);
+            cam.getPosition().add(0, -0.005f, 0);
+            collision = level.getCollision(cam);
+            cam.getPosition().setComponent(1, yStore);
+            if (collision instanceof UpdatablePlatform) {
+                Vector3f pos = ((UpdatablePlatform)collision).getPosition();
+                Vector3f lastPos = ((UpdatablePlatform)collision).getLastPosition();
+                
+                float translateX = pos.x() - lastPos.x();
+                float translateY = pos.y() - lastPos.y();
+                float translateZ = pos.z() - lastPos.z();
+                
+                cam.getPosition().add(translateX, translateY, translateZ);
+            }
+            
             synchronized (mousePos) {
                 cam.processMouseMovement(mousePos[0], mousePos[1]);
             }
@@ -196,7 +212,7 @@ public class Game {
             
             g.drawString("Level: "+currentLevel, 0, 28);
 
-            level.render(g, cam);
+            level.render(g, cam, tpf);
             
             st.show();
             g.dispose();
